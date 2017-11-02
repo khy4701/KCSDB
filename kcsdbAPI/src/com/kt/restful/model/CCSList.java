@@ -3,6 +3,11 @@ package com.kt.restful.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
+
+//
+@JsonPropertyOrder(alphabetic=true) 
 public class CCSList {
 	
 	List<CCSInfo> ccs = new ArrayList<CCSInfo>();
@@ -15,6 +20,7 @@ public class CCSList {
 		this.ccs = ccs;
 	}
 
+	@JsonPropertyOrder({ "CCM_REFERID", "CCM_TIME", "CGMDN", "CCS_TIME", "CCM_STATUS","CCM_STATUS","SMS_TIME","SMS_STATUS","CCM_REASON" })
 	public static class CCSInfo {
 			private String CCM_REFERID;
 			private String CCM_TIME;
@@ -25,6 +31,8 @@ public class CCSList {
 			private String SMS_STATUS;
 			private String CCM_REASON;
 	 
+		
+			@JsonProperty("CCM_REFERID")
 			public String getCCM_REFERID() {
 				return CCM_REFERID;
 			}
@@ -32,7 +40,8 @@ public class CCSList {
 			public void setCCM_REFERID(String cCM_REFERID) {
 				CCM_REFERID = cCM_REFERID;
 			}
-
+			
+			@JsonProperty("CCM_TIME")
 			public String getCCM_TIME() {
 				return CCM_TIME;
 			}
@@ -40,7 +49,8 @@ public class CCSList {
 			public void setCCM_TIME(String cCM_TIME) {
 				CCM_TIME = cCM_TIME;
 			}
-
+			
+			@JsonProperty("CGMDN")
 			public String getCGMDN() {
 				return CGMDN;
 			}
@@ -49,27 +59,31 @@ public class CCSList {
 				CGMDN = cGMDN;
 			}
 
+			@JsonProperty("CCS_TIME")
 			public String getCCS_TIME() {
 				return CCS_TIME;
 			}
-
+			
 			public void setCCS_TIME(String cCS_TIME) {
 				CCS_TIME = cCS_TIME;
 			}
 
+			@JsonProperty("CCM_STATUS")
 			public String getCCM_STATUS() {
 				return CCM_STATUS;
 			}
 
+			@JsonProperty("SMS_TIME")
 			public String getSMS_TIME() {
 				return SMS_TIME;
 			}
 
-
+			@JsonProperty("SMS_STATUS")
 			public String getSMS_STATUS() {
 				return SMS_STATUS;
 			}
 
+			@JsonProperty("CCM_REASON")
 
 			public String getCCM_REASON() {
 				return CCM_REASON;

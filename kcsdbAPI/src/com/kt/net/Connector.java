@@ -111,15 +111,13 @@ public abstract class Connector implements Runnable {
 				readMessage();
 			} catch (Exception e) {
 				logger.error(socket.getInetAddress().getHostName() + ":" + socket.getPort() + " exception occured");
-				logger.error(e);
 				logger.error("not connected...");
-				logger.error(this.getClass().getName() + "-" + e.getMessage());
+				//logger.error(this.getClass().getName() + "-" + e.getMessage());
 				e.printStackTrace();
 				reader = null;
 				break;
 			}
 		}
-		
 		try {
 			socket.close();
 		} catch (IOException e) {

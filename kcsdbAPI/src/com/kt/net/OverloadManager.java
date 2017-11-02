@@ -99,13 +99,13 @@ public class OverloadManager implements CommandReceiver{
 		String result = "";
 		switch (command.toUpperCase()) {		
 		case "OVERLOAD_MODE" :
-			logger.info("OVERLOAD_MODE TPS : " + Integer.parseInt(tps));
+			logger.error("OVERLOAD_MODE TPS : " + Integer.parseInt(tps));
 			result = "PROVS OverloadControl Flag : On";
 			try {
 				overloadTps = Integer.parseInt(tps);
 				overloadControlFlag = true;
 				OverloadControlProperty.setProperty(overloadTps);
-				logger.info("overloadTps : " + overloadTps);
+				logger.error("overloadTps : " + overloadTps);
 				
 				System.out.println("[DEBUG] Result - " + result + ", overloadTps - " + overloadTps);
 			} catch (Exception ex) {
@@ -114,13 +114,13 @@ public class OverloadManager implements CommandReceiver{
 			break;
 						
 		case "NORMAL_MODE" :
-			logger.info("NORMAL_MODE : " + Integer.parseInt(tps));
+			logger.error("NORMAL_MODE : " + Integer.parseInt(tps));
 			result = "PROVS OverloadControl Flag : Off";
 			try {
 				overloadTps = Integer.parseInt(tps);
 				overloadControlFlag = false;
 				OverloadControlProperty.setProperty(overloadTps);
-				logger.info("overloadTps : " + overloadTps);
+				logger.error("overloadTps : " + overloadTps);
 				
 				System.out.println("[DEBUG] Result - " + result + ", overloadTps - " + overloadTps);
 			} catch (Exception ex) {

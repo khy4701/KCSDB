@@ -37,25 +37,9 @@ public class CommandConnector extends Connector2 {
 
 	public CommandConnector() {
 		super(CommandManager.getInstance(), kcsdbProperty.getPropPath("kcsdb_command_ipaddress"), Integer.parseInt(kcsdbProperty.getPropPath("kcsdb_command_port")));
-		//		super(CommandManager.getInstance(), "192.168.70.237", 24834);
 		msgSize = new int[4];
 		for( int i=0; i<msgSize.length; i++ )
 			msgSize[i] = -1;
-
-		//		if (isConnected()) {
-		//			try {
-		//				dataOut.writeInt("INIT_COMPLETE".getBytes().length);	// length
-		//				dataOut.writeInt(0);								                    // mapType					
-		//				dataOut.writeInt(0);								                    // seqflag + seqNo
-		//				dataOut.writeBytes("INIT_COMPLETE");					         // body
-		//				dataOut.flush();
-		//				
-		//				
-		//				System.out.println("XXXX");
-		//			} catch (IOException e) {
-		//			    e.printStackTrace();
-		//			}			
-		//		}
 	}
 
 	protected boolean sendMessage() {

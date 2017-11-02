@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.kt.restful.constants.kcsdbProperty;
+
 public class DBConnector {
 	private static DBConnector dbConnector;
 	private Connection con;
@@ -23,7 +25,16 @@ public class DBConnector {
 		try
 		{
 			Class.forName("com.edb.Driver");
-			con = DriverManager.getConnection("jdbc:edb://192.168.70.201:5444/kcsdb","enterprisedb","ppas.123");
+			
+			String ipAddress = kcsdbProperty.getPropPath("ppas_ipaddress");
+			String port = kcsdbProperty.getPropPath("ppas_port");
+			String dbName = kcsdbProperty.getPropPath("ppas_dbName");
+			String userId = kcsdbProperty.getPropPath("ppas_conn_id");
+			String userPw = kcsdbProperty.getPropPath("ppas_conn_pw");
+			
+			String connInfo = new String("jdbc:edb://"+ipAddress+":"+port+"/"+dbName);
+			
+			con = DriverManager.getConnection(connInfo, userId , userPw);			
 		}
 		catch(Exception e) 
 		{

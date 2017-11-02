@@ -111,7 +111,7 @@ public abstract class Connector2 implements Runnable {
 				readMessage();
 			} catch (Exception e) {
 				logger.error(socket.getInetAddress().getHostName() + ":" + socket.getPort() + " exception occured");
-				logger.error(e);
+				//logger.error(e);
 				logger.error("not connected...");
 				logger.error(this.getClass().getName() + "-" + e.getMessage());
 				e.printStackTrace();
@@ -122,7 +122,7 @@ public abstract class Connector2 implements Runnable {
 		try {
 			socket.close();
 		} catch (IOException e) {
-			logger.error(e);
+			//logger.error(e);
 		}
 
 		socket = null;

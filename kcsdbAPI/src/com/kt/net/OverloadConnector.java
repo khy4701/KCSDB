@@ -37,7 +37,7 @@ public class OverloadConnector extends Connector2 {
 
 	public OverloadConnector() {
 		super(OverloadManager.getInstance(), kcsdbProperty.getPropPath("kcsdb_overload_ipaddress"), Integer.parseInt(kcsdbProperty.getPropPath("kcsdb_overload_port")));
-		//		super(OverloadManager.getInstance(), "192.168.70.237", 24834);
+
 		msgSize = new int[4];
 		for( int i=0; i<msgSize.length; i++ )
 			msgSize[i] = -1;
@@ -60,16 +60,16 @@ public class OverloadConnector extends Connector2 {
 			int bodyLen = 32 + 16 + 64 + 4 + sendMsg.length();
 
 			if(OverloadManager.getInstance().isLogFlag()) {
-				logger.info("===============================================");
-				logger.info("PROVS -> OVLD");
-				logger.info("bodyLen : " + bodyLen);
-				logger.info("command : " + command);
-				logger.info("imsi : " + imsi);
-				logger.info("ipAddress : " + ipAddress);
-				logger.info("jobNo : " + jobNo);
-				logger.info("sendMsg ");
-				logger.info(sendMsg);
-				logger.info("===============================================");
+				logger.error("===============================================");
+				logger.error("RESTIF -> OVLD");
+				logger.error("bodyLen : " + bodyLen);
+				logger.error("command : " + command);
+				logger.error("imsi : " + imsi);
+				logger.error("ipAddress : " + ipAddress);
+				logger.error("jobNo : " + jobNo);
+				logger.error("sendMsg ");
+				logger.error(sendMsg);
+				logger.error("===============================================");
 			}
 
 			int mapType = 4;
@@ -141,13 +141,12 @@ public class OverloadConnector extends Connector2 {
 	protected void readMessage() throws IOException {
 		
 		if (msgReadStarted == false) {
-			//			reservedMsgSize = byteToInt(toBytes(dataIn.readInt()), ByteOrder.BIG_ENDIAN);
+						reservedMsgSize = byteToInt(toBytes(dataIn.readInt()), ByteOrder.BIG_ENDIAN);
 			//			reservedMsgSize = byteToInt(toBytes(dataIn.readInt()), ByteOrder.LITTLE_ENDIAN);
-			reservedMsgSize = dataIn.readInt();
+			//reservedMsgSize = dataIn.readInt();
 			//			reservedMsgSize = reservedMsgSize - 4;
 			if (reservedMsgSize > BUFFER_SIZE) {
-				logger.info(
-						"(DBM) ReservedMsgSize is larger than "+ BUFFER_SIZE+ " : " + reservedMsgSize);
+				//logger.error(	"(DBM) ReservedMsgSize is larger than "+ BUFFER_SIZE+ " : " + reservedMsgSize);
 				//				throw new IOException("Larger than " + BUFFER_SIZE + " bytes");
 				msgReadStarted = false;
 				totalReadSize = 0;
@@ -189,14 +188,14 @@ public class OverloadConnector extends Connector2 {
 					int jobNo = din.readInt();
 
 					if(OverloadManager.getInstance().isLogFlag()) {
-						logger.info("===============================================");
-						logger.info("OVLD -> PROVS");
-						logger.info("bodyLen : " + reservedMsgSize);
-						logger.info("command : " + command);
-						logger.info("imsi : " + imsi);
-						logger.info("ipAddress : " + ipAddress);
-						logger.info("jobNo : " + jobNo);
-						logger.info("===============================================");
+						logger.error("===============================================");
+						logger.error("OVLD -> RESTIF");
+						logger.error("bodyLen : " + reservedMsgSize);
+						logger.error("command : " + command);
+						logger.error("imsi : " + imsi);
+						logger.error("ipAddress : " + ipAddress);
+						logger.error("jobNo : " + jobNo);
+						logger.error("===============================================");
 					}
 
 					//				Thread.sleep(500);

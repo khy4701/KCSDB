@@ -79,7 +79,7 @@ public class StatisticsConnector extends Connector {
 			dataOut.flush();
 
 			logger.info("=============================================");
-			logger.info("JAVA -> PROVIB TCP SEND");
+			logger.info("RESTIF -> STMD TCP SEND");
 			logger.info("apiName : " + command);
 			logger.info("tid : " + clientReqID);
 			logger.info("bodyLen : " + bodyLen);
@@ -112,7 +112,7 @@ public class StatisticsConnector extends Connector {
 			int bodyLen = 4 + (statistics.size() * 168);
 			if(CommandManager.getInstance().isLogFlag()) {
 				for(Entry<String, StatisticsModel> entry : statistics.entrySet()) {
-					logger.info(entry.getValue().getIpAddress() + " : " + entry.getValue().getApiName() + " : " + entry.getValue().getTotal() + " : " + entry.getValue().getSucc() + " : " + entry.getValue().getFail()
+					logger.debug(entry.getValue().getIpAddress() + " : " + entry.getValue().getApiName() + " : " + entry.getValue().getTotal() + " : " + entry.getValue().getSucc() + " : " + entry.getValue().getFail()
 							+ " : " + entry.getValue().getError400() + " : " + entry.getValue().getError403()+ " : " + entry.getValue().getError409() + " : " + entry.getValue().getError410()
 							+ " : " + entry.getValue().getError500() + " : " + entry.getValue().getError501()+ " : " + entry.getValue().getError503());
 				}
@@ -240,7 +240,7 @@ public class StatisticsConnector extends Connector {
 				dataOut.flush();
 			}
 		} catch (Exception e) {
-			logger.error("Message Send Error Message - " + e );
+			logger.error("Message Send Error Message -" + e );
 			e.printStackTrace();
 			return false;
 		}
