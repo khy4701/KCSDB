@@ -19,6 +19,7 @@ public class ClientSim extends Thread
     private static String param1;
     private static String param2;
     private static String param3 = null;
+    private static String param4 = null;
     private static String printFlag = null;
     
     private static int tps;
@@ -90,8 +91,7 @@ public class ClientSim extends Thread
 		} else
 			endSubs = 1099999999;
         
-        param1    = params[0];
-        	
+        param1    = params[0];        	
         try{
         	param2    = params[1];
         }catch(Exception e){
@@ -104,6 +104,14 @@ public class ClientSim extends Thread
 		} catch (Exception e) {
 			param3 = null;			
 		}
+        
+        try {
+			if (params[3] != null)
+				param4 = params[3];
+		} catch (Exception e) {
+			param4 = null;			
+		}
+          
                 
         System.out.println("---------------Start Client Simulator---------------");
         System.out.println("[Thread Num] : " + threadNum);
@@ -113,6 +121,7 @@ public class ClientSim extends Thread
         System.out.println("[Param1    ] : " + param1);
         System.out.println("[Param2    ] : " + param2);
         System.out.println("[Param3    ] : " + param3);
+        System.out.println("[Param4    ] : " + param4);
         System.out.println("[Tps       ] : " + tps);
         System.out.println("[SendLimit ] : " + sendLimit);
         
@@ -202,7 +211,11 @@ public class ClientSim extends Thread
             
             if(operator.equals("QUERY_CCSINFO")){
         		String startStr = new String("010"+startSubs);
-				String input = "{\"CDMDN\":\"" + startStr + "\",\"CCM_TIME\":\"" + param1 + "\"}";
+        		String input = null;
+        		if (param4 == null)
+        			input = "{\"CDMDN\":\"" + startStr + "\",\"CCM_TIME\":\"" + param1 + "\", \"START_ROW\":\""+Integer.parseInt(param2) +"\", \"END_ROW\":\""+Integer.parseInt(param3) +"\"}";
+        		else
+        			input = "{\"CDMDN\":\"" + startStr + "\",\"CCM_TIME\":\"" + param1 + "\", \"START_ROW\":"+Integer.parseInt(param2) +", \"END_ROW\":\""+Integer.parseInt(param3) +"\", \"CGMDN\":\""+param4+"\"}";
 				response = webResource.type("application/json").post(ClientResponse.class, input);
             }else{
             	String input = null;

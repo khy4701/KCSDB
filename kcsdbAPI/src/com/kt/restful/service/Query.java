@@ -1,6 +1,5 @@
 package com.kt.restful.service;
 
-import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,12 +15,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
 
@@ -35,8 +31,36 @@ import com.sun.jersey.core.spi.factory.ResponseBuilderImpl;
 
 @Path("/query")
 public class Query {
+	
+//	private static final String GET_QUERY_INFO = "SELECT * FROM ( "
+//			+ "SELECT ROWNUM AS RN , A.* FROM ( "
+//			+ "SELECT CCM_REFERID, CCM_TIME, CGMDN, CCS_TIME, CCM_REASON, CCM_STATUS, SMS_TIME, SMS_STATUS "
+//			+ "FROM CCS_MASTER B "
+//			+ "WHERE %s CDMDN = ? AND CCM_TIME >= ? "
+//			+ "AND CCS_TIME >= TO_CHAR(SYSDATE-90,'YYYYMMDDHH24MISS') AND CCS_TIME >= ? AND CCS_TIME < ? "
+//			+ "AND delete_flag = 'N' ORDER BY CCS_TIME ASC ) A "
+//			+ "ORDER BY RN DESC ) WHERE RN BETWEEN  ? AND ?";
 
-	private static final String GET_QUERY_INFO = "SELECT CCM_REFERID, CCM_TIME, CGMDN, CCS_TIME, CCM_STATUS, SMS_TIME, SMS_STATUS, CCM_REASON FROM CCS_MASTER ";
+//	private static final String COUNT_QUERY = "SELECT COUNT(*) AS CT FROM CCS_MASTER B "
+//			+ "WHERE %s CDMDN = ? AND CCM_TIME >= ? "
+//			+ "AND CCS_TIME >= TO_CHAR(SYSDATE-90,'YYYYMMDDHH24MISS') AND CCS_TIME >= ? AND CCS_TIME < ? "
+//			+ "AND delete_flag = 'N'";
+
+
+
+	private static final String GET_QUERY_INFO = "SELECT * FROM ( "
+													+ "SELECT ROWNUM AS RN , A.* FROM ( "
+													+ "SELECT CCM_REFERID, CCM_TIME, CGMDN, CCS_TIME, CCM_REASON, CCM_STATUS, SMS_TIME, SMS_STATUS "
+													+ "FROM CCS_MASTER B "
+													+ "WHERE %s CDMDN = ? AND CCM_TIME >= ? "
+													+ "AND CCS_TIME >= ? AND CCS_TIME < ? "
+													+ "AND delete_flag = 'N' ORDER BY CCS_TIME ASC ) A "
+													+ "ORDER BY RN DESC ) WHERE RN BETWEEN  ? AND ?";
+	
+	private static final String COUNT_QUERY = "SELECT COUNT(*) AS CT FROM CCS_MASTER B "
+													+ "WHERE %s CDMDN = ? AND CCM_TIME >= ? "
+													+ "AND CCS_TIME >= ? AND CCS_TIME < ? "
+													+ "AND delete_flag = 'N'";
 	
 	private static Logger logger = LogManager.getLogger(Query.class);
 	private int rspCode = -1;
@@ -55,11 +79,28 @@ public class Query {
 		String result = null;
 		int ret;
 
-		// 01. Read Json Parameter
-		JSONObject jsonObj = new JSONObject(jsonbody);
-
+		// 01. Read Json Parameter		
+		JSONObject jsonObj = null;
+		try{
+			jsonObj = new JSONObject(jsonbody);
+		}		
+		catch(Exception e){
+			logger.error("Json Parsing Error  : " + jsonbody);			
+		}
+		
+		String cgmdn = null;
+		
+		try{
+			cgmdn = jsonObj.get("CGMDN").toString();
+		}catch(Exception e){
+			cgmdn = null;
+		}
+		
 		String cdmdn = jsonObj.get("CDMDN").toString();
 		String ccmTime = jsonObj.get("CCM_TIME").toString();
+		
+		int startRow = Integer.parseInt(jsonObj.get("START_ROW").toString());
+		int endRow = Integer.parseInt(jsonObj.get("END_ROW").toString());
 
 		long time = System.currentTimeMillis();
 		String s_time = dayTime.format(new Date(time));
@@ -71,8 +112,11 @@ public class Query {
 			logger.debug("REQUEST URL : " + req.getRequestURL().toString());
 			logger.debug("CDMDN : " + cdmdn);
 			logger.debug("CCM_TIME : " + ccmTime);
+			logger.debug("START_ROW : " + startRow);
+			logger.debug("END_ROW : " + endRow);
+			logger.debug("CGMDN : " + cgmdn);
 			logger.debug("=============================================");
-			logger.info(req.getRemoteAddr() + "->KCSDB," + cdmdn + "," + ccmTime);
+			logger.info(req.getRemoteAddr() + "->KCSDB,"+ cdmdn + "," + ccmTime + "," + startRow +"," + endRow + "," + cgmdn);
 
 		}
 
@@ -87,6 +131,7 @@ public class Query {
 		synchronized (ServiceManager.getInstance()) {
 
 			// 03. Check OverLoad TPS
+			
 			ret = ServiceManager.getInstance().checkOverloadTPS(req, api);
 			if (ret < 0) {
 				return Response.status(503).entity("").build();
@@ -97,13 +142,14 @@ public class Query {
 
 			// 05. Data Processing
 			String sql = null;
-			PreparedStatement pStatement = null;
-			ResultSet rs = null;
+			PreparedStatement pStatement = null, pStatement2 = null;
+			ResultSet rs = null, rs2 = null;
 			CCSList ccsList = new CCSList();
 			
 			mapper = new ObjectMapper();
 			
-			String query ;
+			// PROCESSING 
+			String query, cnt_query ;
 			int year = c.get(Calendar.YEAR);
 			int month = c.get(Calendar.MONTH) + 1;
 
@@ -114,21 +160,44 @@ public class Query {
 				year += 1;
 				month = 1;
 			}
-
+			
 			String curDate = new String(String.format("%d%02d000000", year, month));
-
+			
 			rspCode = 400;
 			try {
-				sql = GET_QUERY_INFO
-						+ "WHERE CDMDN = ? AND CCM_TIME >= ? AND CCS_TIME >= TO_CHAR(current_date-90, 'YYYYMMDD') AND DELETE_FLAG = 'N' AND ccs_time >= ? and ccs_time < ? ORDER BY CCS_TIME DESC LIMIT 100";
+				int index;
+				if (cgmdn != null){
+					query = String.format(GET_QUERY_INFO, "trim(CGMDN) = ? AND" );
+					cnt_query = String.format(COUNT_QUERY, "trim(CGMDN) = ? AND" );	
+				}
+				else{
+					query = String.format(GET_QUERY_INFO, "" );
+					cnt_query = String.format(COUNT_QUERY, "" );
+				}
 
-				query = String.format(sql, startDate, curDate);
-
-				pStatement = DBConnector.getInstance().getConnect().prepareStatement(sql);
-				pStatement.setString(1, cdmdn);
-				pStatement.setString(2, ccmTime);
-				pStatement.setString(3, startDate);
-				pStatement.setString(4, curDate);
+				
+				pStatement = DBConnector.getInstance().getConnect().prepareStatement(query);
+				pStatement2 = DBConnector.getInstance().getConnect().prepareStatement(cnt_query);
+				
+				if(cgmdn != null){
+					index = 1;
+					pStatement.setString(index, cgmdn);				
+					pStatement2.setString(index, cgmdn);
+				}else
+					index = 0;				
+				
+				pStatement.setString(index+1, cdmdn);
+				pStatement.setString(index+2, ccmTime);
+				pStatement.setString(index+3, startDate);
+				pStatement.setString(index+4, curDate);
+				pStatement.setInt(index+5, startRow);
+				pStatement.setInt(index+6, endRow);
+				
+				
+				pStatement2.setString(index+1, cdmdn);
+				pStatement2.setString(index+2, ccmTime);
+				pStatement2.setString(index+3, startDate);
+				pStatement2.setString(index+4, curDate);
 
 				rs = pStatement.executeQuery();
 				logger.debug(sql);
@@ -144,15 +213,25 @@ public class Query {
 					rspCode = 200;
 					logger.debug("Query Success");
 				}
+				
+				rs2 = pStatement2.executeQuery();
+				rs2.next();
+				int total_count = rs2.getInt("CT");
+				if (total_count == 0){
+					rspCode = 400;
+					logger.error("total_count[0]" + req.getRemoteAddr() + "->KCSDB,"+ cdmdn + "," + ccmTime + "," + startRow +"," + endRow + "," + cgmdn);
+				}
+				
+				ccsList.setTOTAL_ROW(total_count);
 
 				if (rspCode == 400) {
-					logger.debug("Query Failed.. START DATE[" + startDate + "], END DATE[" + curDate + "]");
+					logger.error("Query Failed.. START DATE[" + startDate + "], END DATE[" + curDate + "]");
 				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
 				rspCode = 500;
-				logger.error(e.getMessage());
+				logger.error("Sql Performance Error: " + e.getMessage());
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -171,24 +250,7 @@ public class Query {
 				}
 			}
 			
-//			try {
-//				result = mapper.defaultPrettyPrintingWriter().writeValueAsString(ccsList.getCcs());
-//				
-//			} catch (JsonGenerationException e) {
-//				// TODO Auto-generated catch block
-//				logger.error(e.getMessage());
-//				rspCode = 500;
-//			} catch (JsonMappingException e) {
-//				// TODO Auto-generated catch block
-//				rspCode = 500;
-//				logger.error(e.getMessage());				
-//			} catch (IOException e) {
-//				rspCode = 500;
-//				// TODO Auto-generated catch block
-//				logger.error(e.getMessage());				
-//			}
-
-			result = gson.toJson(ccsList.getCcs());
+			result = gson.toJson(ccsList);
 			// 05. Statistic Increase
 			ServiceManager.getInstance().statIncease(req, api, rspCode);
 

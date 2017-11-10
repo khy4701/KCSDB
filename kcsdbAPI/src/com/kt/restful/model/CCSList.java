@@ -10,14 +10,23 @@ import org.codehaus.jackson.annotate.JsonPropertyOrder;
 @JsonPropertyOrder(alphabetic=true) 
 public class CCSList {
 	
-	List<CCSInfo> ccs = new ArrayList<CCSInfo>();
+	private int TOTAL_ROW;
+	public int getTOTAL_ROW() {
+		return TOTAL_ROW;
+	}
+
+	public void setTOTAL_ROW(int tOTAL_ROW) {
+		TOTAL_ROW = tOTAL_ROW;
+	}
+
+	List<CCSInfo> LIST = new ArrayList<CCSInfo>();
 		
 	 public List<CCSInfo> getCcs() {
-		return ccs;
+		return LIST;
 	}
 
 	public void setCcs(List<CCSInfo> ccs) {
-		this.ccs = ccs;
+		this.LIST = ccs;
 	}
 
 	@JsonPropertyOrder({ "CCM_REFERID", "CCM_TIME", "CGMDN", "CCS_TIME", "CCM_STATUS","CCM_STATUS","SMS_TIME","SMS_STATUS","CCM_REASON" })
@@ -125,6 +134,6 @@ public class CCSList {
 	}
 	
 	public void addCCSInfo(CCSInfo ccsInfo){
-		ccs.add(ccsInfo);
+		LIST.add(ccsInfo);
 	}
 }

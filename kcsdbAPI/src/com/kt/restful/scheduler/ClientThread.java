@@ -32,7 +32,7 @@ public class ClientThread extends Thread {
     public void run() {
         super.run();
         
-        logger.debug("run");
+        logger.error("run");
         
         timer = new Timer();
         

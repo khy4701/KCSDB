@@ -153,7 +153,7 @@ public class CommandConnector extends Connector2 {
 			reservedMsgSize = dataIn.readInt();
 			//			reservedMsgSize = reservedMsgSize - 4;
 			if (reservedMsgSize > BUFFER_SIZE) {
-				logger.info(
+				logger.error(
 						"(DBM) ReservedMsgSize is larger than "+ BUFFER_SIZE+ " : " + reservedMsgSize);
 				//				throw new IOException("Larger than " + BUFFER_SIZE + " bytes");
 				msgReadStarted = false;

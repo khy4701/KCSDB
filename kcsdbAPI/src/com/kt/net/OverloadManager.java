@@ -36,7 +36,7 @@ public class OverloadManager implements CommandReceiver{
 					allowIpList.add(ip);
 				}
 			}
-			logger.info("allow_ip_list : " + AllowIpProperty.getPropPath("allow_ip_list"));
+			logger.error("allow_ip_list : " + AllowIpProperty.getPropPath("allow_ip_list"));
 		} catch (Exception ex) {
 			logger.error("AllowIpProperty Load Excetpion Occured : " + ex.getMessage());
 		}
@@ -49,7 +49,7 @@ public class OverloadManager implements CommandReceiver{
 //				overloadControlFlag = false;
 //			}
 			overloadTps = Integer.parseInt(OverloadControlProperty.getPropPath("overloadControlTPS"));
-			logger.info("overloadTps : " + overloadTps);
+			logger.error("overloadTps : " + overloadTps);
 		} catch (Exception ex) {
 			logger.error("OverloadControlProperty Load Excetpion Occured : " + ex.getMessage());
 		}
@@ -61,7 +61,7 @@ public class OverloadManager implements CommandReceiver{
 			} else {
 				logFlag = false;
 			}
-			logger.info("logFlag : " + logFlag);
+			logger.error("logFlag : " + logFlag);
 		} catch (Exception ex) {
 			logger.error("LogFlagProperty Load Excetpion Occured : " + ex.getMessage());
 		}		

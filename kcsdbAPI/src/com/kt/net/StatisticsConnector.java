@@ -1,10 +1,11 @@
 package com.kt.net;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,15 +79,15 @@ public class StatisticsConnector extends Connector {
 			dataOut.write(bodySB.toString().getBytes());
 			dataOut.flush();
 
-			logger.info("=============================================");
-			logger.info("RESTIF -> STMD TCP SEND");
-			logger.info("apiName : " + command);
-			logger.info("tid : " + clientReqID);
-			logger.info("bodyLen : " + bodyLen);
-			logger.info("==============BODY==================");
-			logger.info(bodySB.toString());
-			logger.info("====================================");
-			logger.info("=============================================");
+			logger.debug("=============================================");
+			logger.debug("RESTIF -> STMD TCP SEND");
+			logger.debug("apiName : " + command);
+			logger.debug("tid : " + clientReqID);
+			logger.debug("bodyLen : " + bodyLen);
+			logger.debug("==============BODY==================");
+			logger.debug(bodySB.toString());
+			logger.debug("====================================");
+			logger.debug("=============================================");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -267,7 +268,7 @@ public class StatisticsConnector extends Connector {
 			//		    reservedMsgSize = byteToInt(toBytes(dataIn.readInt()), ByteOrder.BIG_ENDIAN);
 
 			if (reservedMsgSize > BUFFER_SIZE) {
-				logger.info(
+				logger.error(
 						"(DBM) ReservedMsgSize is larger than "+ BUFFER_SIZE+ " : " + reservedMsgSize);
 				throw new IOException("Larger than " + BUFFER_SIZE + " bytes");
 			}

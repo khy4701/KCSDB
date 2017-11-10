@@ -13,7 +13,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -77,7 +76,7 @@ public class UpdateDelete {
 		// 02. Check Allow IP
 		ret = ServiceManager.getInstance().checkAllowIP(req, api);
 		if (ret < 0) {
-			logger.info("Request Remote IP(" + req.getRemoteAddr() + ") Not Allow IP");
+			logger.error("Request Remote IP(" + req.getRemoteAddr() + ") Not Allow IP");
 			return Response.status(403).entity("").build();
 		}
 
@@ -131,7 +130,7 @@ public class UpdateDelete {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				logger.error(e.getMessage());
+				logger.error("Update Error :" + e.getMessage());
 
 			} finally {
 				try {

@@ -1,13 +1,15 @@
 package com.kt.net;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.kt.restful.constants.AllowIpProperty;
 import com.kt.restful.constants.LogFlagProperty;
-import com.kt.restful.constants.OverloadControlProperty;
 import com.kt.restful.model.StatisticsModel;
 
 public class CommandManager implements CommandReceiver{
@@ -33,7 +35,7 @@ public class CommandManager implements CommandReceiver{
 					allowIpList.put(ipInfo[0], ipInfo[1]);
 				}
 			}
-			logger.info("allow_ip_list : " + AllowIpProperty.getPropPath("allow_ip_list"));
+			logger.error("allow_ip_list : " + AllowIpProperty.getPropPath("allow_ip_list"));
 		} catch (Exception ex) {
 			logger.error("AllowIpProperty Load Excetpion Occured : " + ex.getMessage());
 		}
@@ -45,7 +47,7 @@ public class CommandManager implements CommandReceiver{
 			} else {
 				logFlag = false;
 			}
-			logger.info("logFlag : " + logFlag);
+			logger.error("logFlag : " + logFlag);
 		} catch (Exception ex) {
 			logger.error("LogFlagProperty Load Excetpion Occured : " + ex.getMessage());
 		}		
@@ -236,7 +238,7 @@ public class CommandManager implements CommandReceiver{
 			break;
 			
 		case "RELOAD-CONFIG-DATA": 
-			logger.info(command + "  "+ imsi);
+			logger.error(command + "  "+ imsi);
 			if(imsi.equals("PROVS")) {
 				if(LogFlagProperty.getPropPath("log_flag").equals("ON")) {
 					logFlag = true;
@@ -250,7 +252,7 @@ public class CommandManager implements CommandReceiver{
 			break;
 			
 		case "DIS-CONFIG-DATA": 
-			logger.info(command + "  "+ imsi);
+			logger.error(command + "  "+ imsi);
 			if(imsi.equals("PROVS")) {
 				if(LogFlagProperty.getPropPath("log_flag").equals("ON")) {
 					logFlag = true;

@@ -6,10 +6,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.kt.restful.constants.kcsdbProperty;
 
 public class DBConnector {
 	private static DBConnector dbConnector;
+	private static Logger logger = LogManager.getLogger(DBConnector.class);
 	private Connection con;
 
 	private DBConnector() {
@@ -38,7 +42,7 @@ public class DBConnector {
 		}
 		catch(Exception e) 
 		{
-			System.out.println("! DB Connection Fail..." + e);
+			logger.error("! DB Connection Fail..." + e);
 			try { Thread.sleep(1000); } catch(InterruptedException ie) {}
 		}
 	}
@@ -61,6 +65,7 @@ public class DBConnector {
 			return count;
 		} catch (SQLException e) {
 		} catch (Exception e) {
+			
 		} finally {
 			try {
 				if( stmt!=null)

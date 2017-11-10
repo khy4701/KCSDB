@@ -3,6 +3,7 @@ package com.kt.restful.scheduler;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -14,7 +15,7 @@ public class ClientScheduler implements ServletContextListener{
  
     public void contextInitialized(ServletContextEvent sce) {
         if ((clientThread == null) || (!clientThread.isAlive())) {
-        	logger.debug("Start");
+        	logger.error("Start");
             clientThread = new ClientThread(new ClientTask());
             clientThread.start();
         }
@@ -22,7 +23,7 @@ public class ClientScheduler implements ServletContextListener{
 
     public void contextDestroyed(ServletContextEvent sce){
         if (clientThread != null && clientThread.isAlive()) {
-        	logger.debug("End");
+        	logger.error("End");
             clientThread.quit();
         }
     }
